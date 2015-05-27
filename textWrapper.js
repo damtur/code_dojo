@@ -1,6 +1,7 @@
-// "use strict";
+"use strict";
 
 var expect = require('chai').expect;
+var newline = '<br>';
 describe('Text Wrapping', function() {
 
   describe('Short text', function(){
@@ -67,31 +68,42 @@ describe('Text Wrapping', function() {
       var wrappedString = wrap(textToWrap, columnWidth);
       expect(wrappedString).to.equal(expected);
     });
+
+    it('will remove trailing spaces after enter', function() {
+      var columnWidth = 5;
+      var textToWrap = '123        54 23';
+      var expected = '123\n54 23';
+      var wrappedString = wrap(textToWrap, columnWidth);
+      expect(wrappedString).to.equal(expected);
+    });
   });
 });
 
 
+
+//**** solution ****//
+if (!String.prototype.trim) {  
+  String.prototype.trim = function () {  
+    return this.replace(/^\s+|\s+$/g,'');  
+  };  
+} 
+
+function getSplitPosition(text, columnWidth) {
+  var positionToSplit = text.substring(0, columnWidth).lastIndexOf(' ');
+  if (positionToSplit == -1) return columnWidth;
+  return positionToSplit;
+}
+
 function wrap(text, columnWidth) {
-  var index = 0;
   var output = '';
-  while (text.length - index > columnWidth) {
-    
+  var remainingText = text;
 
-    var positionToSplit = columnWidth;
-    var splitAtSpace = false;
-    for (positionToSplit = columnWidth; positionToSplit > 0; --positionToSplit) {
-      if (text[positionToSplit+index] == ' ') {
-        splitAtSpace = true;
-        break;
-      }
-    }
-    if (!splitAtSpace) {
-      positionToSplit = columnWidth;
-    }
-
-    output += text.substring(index, index + positionToSplit) + '\n';
-    index += positionToSplit + (splitAtSpace ? 1 : 0);
+  while (remainingText.length > columnWidth) {
+    var positionToSplit = getSplitPosition(remainingText, columnWidth);
+    output += remainingText.substring(0, positionToSplit).trim() + '\n';
+    remainingText = remainingText.substring(positionToSplit).trim();
   } 
-  output += text.substring(index);
+  output += remainingText;
+
   return output;
 }
