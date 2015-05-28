@@ -1,0 +1,7 @@
+{
+  "name": "code-dojo",
+  "version": "1.0.0",
+  "dependencies": {
+    "chai": "^2.3.0"
+  }
+}
